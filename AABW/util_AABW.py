@@ -1,5 +1,7 @@
 import pathlib
 import requests
+import pandas as pd
+from collections import namedtuple
 
 
 def RetrieveDataSet(file_name: str) -> bool:
@@ -23,3 +25,45 @@ def RetrieveDataSet(file_name: str) -> bool:
             file.write(response.content)
             return True
     return False
+
+
+def ReadWorkbookIntoNamedTuple(file_name: str) -> namedtuple:
+    """
+    Reads an Excel workbook into a named tuple of DataFrames,
+    using sheet names as field names.
+
+    Args:
+        file_name (str): The name of the Excel file to read.
+
+    Returns:
+        namedtuple: A named tuple where field names correspond to sheet names,
+        and values are DataFrames.
+    """
+    def make_valid_identifier(name: str) -> str:
+        name = name.title().replace(' ', '').replace('-', '')
+        if name[0].isdigit():
+            name = '_' + name
+        return name
+
+    xls = pd.ExcelFile(file_name)
+    sheets = {make_valid_identifier(n): pd.read_excel(xls, n)
+              for n in xls.sheet_names}
+    SheetData = namedtuple('SheetData', sheets.keys())
+    return SheetData(**sheets)
+
+
+def WriteNamedTupleIntoWorkbook(data: namedtuple, file_name: str) -> None:
+    """
+    Writes a named tuple of DataFrames into an Excel workbook with sheet
+    names corresponding to field names.
+
+    Args:
+        data (namedtuple): A named tuple containing DataFrames.
+        file_name (str): The name of the Excel file to create or overwrite.
+
+    Returns:
+        None
+    """
+    with pd.ExcelWriter(file_name, engine='xlsxwriter') as writer:
+        for name, df in zip(data._fields, data):
+            df.to_excel(writer, sheet_name=name, index=False)
