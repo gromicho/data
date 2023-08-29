@@ -42,7 +42,7 @@ def ReadWorkbookIntoNamedTuple(file_name: str) -> namedtuple:
     def make_valid_identifier(name: str) -> str:
         name = ''.join(
             (w[0].upper()+w[1:]).replace(' ', '').replace('-', '')
-            for w in name.spilt()
+            for w in name.split()
         )
         if name[0].isdigit():
             name = '_' + name
