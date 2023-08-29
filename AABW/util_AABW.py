@@ -69,4 +69,4 @@ def WriteNamedTupleIntoWorkbook(data: namedtuple, file_name: str) -> None:
     """
     with pd.ExcelWriter(file_name, engine='xlsxwriter') as writer:
         for name, df in zip(data._fields, data):
-            df.to_excel(writer, sheet_name=name)
+            df.to_excel(writer, sheet_name=name, index=False)
