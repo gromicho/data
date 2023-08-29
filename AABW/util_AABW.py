@@ -40,7 +40,10 @@ def ReadWorkbookIntoNamedTuple(file_name: str) -> namedtuple:
         and values are DataFrames.
     """
     def make_valid_identifier(name: str) -> str:
-        name = (name[0].upper()+name[1:]).replace(' ', '').replace('-', '')
+        name = ''.join(
+            (w[0].upper()+w[1:]).replace(' ', '').replace('-', '')
+            for w in name.spilt()
+        )
         if name[0].isdigit():
             name = '_' + name
         return name
