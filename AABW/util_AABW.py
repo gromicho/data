@@ -27,7 +27,7 @@ def RetrieveDataSet(file_name: str) -> bool:
     return False
 
 
-def ReadWorkbookIntoNamedTuple(file_name: str) -> namedtuple:
+def ReadWorkbookIntoNamedTuple(file_name: str, idx_col=None) -> namedtuple:
     """
     Reads an Excel workbook into a named tuple of DataFrames,
     using sheet names as field names.
@@ -39,7 +39,7 @@ def ReadWorkbookIntoNamedTuple(file_name: str) -> namedtuple:
         namedtuple: A named tuple where field names correspond to sheet names,
         and values are DataFrames.
     """
-    def make_valid_identifier(name: str) -> str:
+    def valid_identifier(name: str) -> str:
         name = ''.join(
             (w[0].upper()+w[1:]).replace(' ', '').replace('-', '')
             for w in name.split()
@@ -49,7 +49,7 @@ def ReadWorkbookIntoNamedTuple(file_name: str) -> namedtuple:
         return name
 
     xls = pd.ExcelFile(file_name)
-    sheets = {make_valid_identifier(n): pd.read_excel(xls, n)
+    sheets = {valid_identifier(n): pd.read_excel(xls, n, index_col=idx_col)
               for n in xls.sheet_names}
     SheetData = namedtuple('SheetData', sheets.keys())
     return SheetData(**sheets)
