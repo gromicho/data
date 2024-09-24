@@ -4,7 +4,7 @@ import pandas as pd
 from collections import namedtuple
 
 
-def RetrieveDataSet(file_name: str) -> bool:
+def RetrieveDataSet(file_name: str, folder:str = 'AABW') -> bool:
     """
     Retrieves a dataset from a this GitHub and saves it locally,
     if it doesn't exist.
@@ -18,7 +18,7 @@ def RetrieveDataSet(file_name: str) -> bool:
     """
     if pathlib.Path(file_name).is_file():
         return True
-    url = f'https://github.com/gromicho/data/raw/main/AABW/{file_name}'
+    url = f'https://github.com/gromicho/data/raw/main/{folder}/{file_name}'
     response = requests.get(url)
     if response.status_code == 200:
         with open(file_name, 'wb') as file:
